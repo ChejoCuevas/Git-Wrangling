@@ -1,0 +1,141 @@
+---
+title: "dw-2022-parcial-1"
+author: "Sergio Cuevas"
+date: "9/19/2022"
+output: rmarkdown::github_document
+
+---
+
+# Examen parcial
+
+Indicaciones generales:
+
+* Usted tiene el período de la clase para resolver el examen parcial.
+* La entrega del parcial, al igual que las tareas, es por medio de su cuenta de github, pegando el link en el portal de MiU.
+
+
+* Pueden hacer uso del material del curso e internet (stackoverflow, etc.). Sin embargo, si encontramos algún indicio de copia, se anulará el exámen para los estudiantes involucrados. Por lo tanto, aconsejamos no compartir las agregaciones que generen. 
+
+## Sección I: Preguntas teóricas.
+
+* Existen 10 preguntas directas en este Rmarkdown, de las cuales usted deberá responder 5. Las 5 a responder estarán determinadas por un muestreo aleatorio basado en su número de carné.
+
+* Ingrese su número de carné en  `set.seed()` y corra el chunk de R para determinar cuáles preguntas debe responder.
+
+
+```{r, echo=TRUE, cache=TRUE}
+
+set.seed(20190216) 
+v<- 1:10
+preguntas <-sort(sample(v, size = 5, replace = FALSE ))
+
+paste0("Mis preguntas a resolver son: 4 6 7 8 9 ",paste0(preguntas,collapse = ", "))
+
+```
+
+
+### Listado de preguntas teóricas
+
+1. Para las siguientes sentencias de `base R`, liste su contraparte de `dplyr`:
+    * `str()`
+    * `df[,c("a","b")]`
+    * `names(df)[4] <- "new_name"` donde la posición 4 corresponde a la variable `old_name`
+    * `df[df$variable == "valor",]`
+    
+    
+2. Al momento de filtrar en SQL, ¿cuál keyword cumple las mismas funciones que el keyword `OR`  para filtrar uno o más elementos una misma columna?
+3. ¿Por qué en R utilizamos funciones de la familia apply (lapply,vapply) en lugar de utilizar ciclos?
+
+4. ¿Cuál es la diferencia entre utilizar `==` y `=` en R?
+El usar '==' significaria lo mismo que decir 'igual que', se utiliza para como "validador" para obtener un resultado logico (si es Verdadero o Falso). Por ejemplo, lo usariamos si quisieramos usar una funcion donde se le asigne una determinada palabra "if df$ventasnologradas == 0". El igual puesto uan sola vez, "=" se usa como "asignador", se esta estableciendo que 'A es 3' por ejemplo, A = 3.
+
+5. ¿Cuál es la forma correcta de cargar un archivo de texto donde el delimitador es `:`?
+
+6. ¿Qué es un vector y en qué se diferencia en una lista en R?
+Un lista esta formada, o puede ser formada, por varios vectores. Dicho esto, pudieramos decir que la lista es aquella clase de objeto en la cual podemos albergar otros tipos de clases de objetos, podemos tener un valor o varios vectores. En una lista, la posicion 1, puede hacer referencia a un vector que adentro tenga las letras de la A a la Z y en la segunda posicion, los numeros del 1 al 10.
+En cambio, un vector solo pudiera tener objetos de la misma clase, ya se char, integer, factor, etc. Si nos referimos a la primera posicion de 1 vector estariamos hablando de el primer numero, o la primera palabra o la primera letra, dependiendo de que se tenGA dentro de el vector. Cada "dato" tiene una posicion especifica para el y se pudiera decir que esta en 1 dimension (como si solo existiese una fila), en cambio una lista pareceria un df (aunque no es lo mismo) por tener algo parecido a las 2 dimensiones, si quisieramos acceder a un dato especifico abria que localizar la posicion X y dentro de esa posicion X su posicion H.
+
+7. ¿Qué pasa si quiero agregar una nueva categoría a un factor que no se encuentra en los niveles existentes?
+Se tuviera que agregar primero el nuevo nivel y luego correrlo otra vez con el nuevo nivel ya agregado.
+Ejemplo>>> levels(factor1) <- c(levels(factor1),"No Answer"), en este caso le estamos agregando el nivel "no Answer" a los niveles que ya tenia antes el factor1, de ahora en adelante No Answer sera reconocido como un nuevo nivel.
+
+8. Si en un dataframe, a una variable de tipo `factor` le agrego un nuevo elemento que *no se encuentra en los niveles existentes*, ¿cuál sería el resultado esperado y por qué?
+    * El nuevo elemento
+    * `NA`, aunque, si se quisiera, es facil agregar ese nuevo nivel para el nuevo elemento por medio de la funcion levels(x) <- value, no se "crea" automaticamente.
+    
+9. En SQL, ¿para qué utilizamos el keyword `HAVING`?
+Having lo utilizamos para la misma funcion que "Where" pero en funciones de agrupacion, donde Where no sirve. Por ejemplo, si utilizamos GROUP BY y quisieramos filtrar los resultados bajo cierta "condicion" se necesitaria utilizar HAVING. Como cuando se hace un group by por artista y en la otra columna esta el numero de canciones que saco, se utilizaria HAVING COUNT si queremos filtrar a aquellos que tienen mas de 10 canciones, por ejemplo.
+
+10. Si quiero obtener como resultado las filas de la tabla A que no se encuentran en la tabla B, ¿cómo debería de completar la siguiente sentencia de SQL?
+
+    * SELECT * FROM A _______ B ON A.KEY = B.KEY WHERE __________ = __________
+  
+Extra: ¿Cuántos posibles exámenes de 5 preguntas se pueden realizar utilizando como banco las diez acá presentadas?
+(responder con código de R.)
+
+
+## Sección II Preguntas prácticas.
+
+
+* Conteste las siguientes preguntas utilizando sus conocimientos de R. Adjunte el código que utilizó para llegar a sus conclusiones en un chunk del markdown.
+
+A. De los clientes que están en más de un país,¿cuál cree que es el más rentable y por qué?
+
+B. Estrategia de negocio ha decidido que ya no operará en aquellos territorios cuyas pérdidas sean "considerables". Bajo su criterio, ¿cuáles son estos territorios y por qué ya no debemos operar ahí?
+
+
+### I. Preguntas teóricas
+Las contestre ARRIBA
+
+## A
+
+```{r }
+###resuelva acá
+library("dplyr")
+library("highcharter")
+head(parcial_anonimo)
+
+ parcial_anonimo %>%
+    select(Pais, Cliente, Venta ) %>%
+    group_by(Cliente) %>% 
+    summarise(No_paises = n_distinct(Pais),Sales = sum(Venta))%>%
+    filter(No_paises > 1) %>%
+    arrange(desc(Sales)) %>%
+    hchart("column", hcaes(x = Cliente, y = Sales)) %>%
+    hc_title(text = "<b>Ventas por cliente que sean multipais </b>") %>%
+    hc_subtitle(text = "<i>Mateo el cliente a17a7558 es el mas rentable en cuanto a ventas historicas </i>")
+
+#Tomando como base el criterio de Ventas Historicas, el cliente que es mas rentable es el a17a7558, con casi 20K en ventas y mas de 1.4K unidades que nos ha comprado. Para encontrar el numero de unidades compradas solo se dividio 19,817.7 / 13.25 (precio unidad) = 1,495
+
+
+
+
+```
+
+
+
+
+## B
+
+```{r }
+###resuelva acá
+ parcial_anonimo %>%
+    select(Territorio,Pais, Venta ) %>%
+    group_by(Territorio) %>% 
+    summarise(,Sales = sum(Venta))%>%
+    arrange(desc(Sales))
+
+
+ parcial_anonimo %>%
+    select(Territorio,Pais, Venta ) %>%
+    group_by(Territorio) %>% 
+    summarise(,Sales = sum(Venta))%>%
+    arrange(Sales)
+    filter(No_paises > 1) %>%
+    arrange(desc(Sales)) %>%
+    hchart("column", hcaes(x = Cliente, y = Sales)) %>%
+    hc_title(text = "<b>Ventas por cliente que sean multipais </b>") %>%
+    hc_subtitle(text = "<i>Mateo el cliente a17a7558 es el mas rentable en cuanto a ventas historicas </i>")
+
+```
+
