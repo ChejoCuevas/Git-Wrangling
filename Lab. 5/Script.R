@@ -25,9 +25,7 @@ eclipse_2
 
 
 # a. ¿En qué meses existe una mayor cantidad de llamadas por código?
-df$mes <- month(df$fecha_creacion)
-por.mes <- data %>% group_by(mes, Cod) %>% 
-  summarise(llamadas = n())
+
 
 
 
