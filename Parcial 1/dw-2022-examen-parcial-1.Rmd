@@ -122,20 +122,23 @@ head(parcial_anonimo)
  parcial_anonimo %>%
     select(Territorio,Pais, Venta ) %>%
     group_by(Territorio) %>% 
-    summarise(,Sales = sum(Venta))%>%
+    summarise(Sales = sum(Venta))%>%
     arrange(desc(Sales))
 
 
  parcial_anonimo %>%
     select(Territorio,Pais, Venta ) %>%
     group_by(Territorio) %>% 
-    summarise(,Sales = sum(Venta))%>%
-    arrange(Sales)
-    filter(No_paises > 1) %>%
-    arrange(desc(Sales)) %>%
-    hchart("column", hcaes(x = Cliente, y = Sales)) %>%
-    hc_title(text = "<b>Ventas por cliente que sean multipais </b>") %>%
-    hc_subtitle(text = "<i>Mateo el cliente a17a7558 es el mas rentable en cuanto a ventas historicas </i>")
+    summarise(Sales = sum(Venta))%>%
+    arrange(Sales) %>%
+    filter(Sales > 10000) %>%
+    hchart("column", hcaes(x = Territorio, y = Sales)) %>%
+    hc_title(text = "<b>Ventas por territorio </b>") %>%
+
+ 
+ # La empresa tiene una politica en la que quiere salir de sus clientes pequenios para enfocarse en los clientes mas grandes #que le traen un mayor porcentaje de sus ventas con menos esfuerzo. 
+ 
+ #En la pasada reunion clarificamos que tenia una meta de 50K historicamente hablando para evaluar la calidad de clientes #que tenemos en el largo plazo. En base a esto yo propuese que la primer a accion a tomar para lograr quedarnos en esos #clientes con mayor calidad es "eliminar" a los clientes que no logren revasar el 20% de esos 50K, eso quiere decir 10K. Es #por eso que se eliminaron a todos aquellos territorios que sus ventas historicas no llegaran ni ha 10K. Esta es una muy #buena propuesta inicial ya que  se logro reducir de 104 territorios a 57 territorios, un poco mas de la mitad, pero sin #lugar a duda con esto conseguimos una operacion en la que se incurren menos costos. Por ultimo, se recomienda seguir con el #paso 2, que seria deshacernos de todos aquellos que hayan comprado 20K, osea el 40%
 
 ```
 
