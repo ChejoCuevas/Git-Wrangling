@@ -2,6 +2,7 @@ library(lubridate)
 library(readxl)
 library(nycflights13)
 library(dplyr)
+library(ggplot2)
 
 df <- read_excel('data.xlsx')
 # PARTE 1 - ECLIPSE
@@ -21,13 +22,84 @@ eclipse_2
 
 
 # Parte 2 - Agrupaciones y operaciones con fechas
-?strftime()
 
+# Arreglando la data
+df <- df %>% rename(fecha_creacion = `Fecha Creación`,
+                        hora_creacion = `Hora Creación`,
+                        caller_id = `Caller ID`,
+                        fecha_final = `Fecha Final`,
+                        hora_final = `Hora Final`)
+fecha_buena <- grepl(pattern = '-', x = df$fecha_creacion)
+df1 <- df[fecha_buena,]
+df2 <- df[!fecha_buena,]
+df2 <- df2 %>% 
+  mutate(fecha_creacion = as.Date(as.numeric(fecha_creacion), origin="1899-12-30"),
+         fecha_final = as.Date(as.numeric(fecha_final), origin="1899-12-30")) %>% 
+  mutate(fecha_creacion = ydm(fecha_creacion),
+         fecha_final = ydm(fecha_final))
+df1 <- df1 %>% 
+  mutate(fecha_creacion = dmy(fecha_creacion),
+         fecha_final = dmy(fecha_final))
+df <- rbind(df1,df2)
+df$duracion <- difftime(time1 = df$hora_final, 
+                          time2 = df$hora_creacion, 
+                          units="mins")
 
 # a. ¿En qué meses existe una mayor cantidad de llamadas por código?
 
+df$mes <- month(df$fecha_creacion)
+por.mes <- df %>% group_by(mes, Cod) %>% 
+  summarise(llamadas = n())
+
+por.mes <- split(x = por.mes, f = por.mes$Cod)
+por.mes <- lapply(por.mes, function(df) {df[order(df$llamadas, decreasing = T),]})
+por.mes[[1]][1,]
+
+por.mes[[2]][1,]
+
+por.mes[[3]][1,]
+
+por.mes[[4]][1,]
+
+por.mes[[5]][1,]
+
+por.mes[[6]][1,]
+
+por.mes[[7]][1,]
 
 
+# b. ¿Qué día de la semana es el más ocupado?
+
+df$dia <- day(df$fecha_creacion)
+por.dia <- df %>% group_by(dia) %>% summarise(llamadas=n())
+por.dia[order(por.dia$llamadas, decreasing = T),][1,]
+
+
+#c. ¿Qué mes es el más ocupado?
+
+mensual <- df %>% group_by(mes) %>% summarise(llamadas=n())
+mensual[order(mensual$llamadas, decreasing = T),][1,]
+
+#d. ¿Existe una concentración o estacionalidad en la cantidad de llamadas?
+
+g1 <- ggplot(data = mensual, mapping = aes(x=mes, y = llamadas))+
+  geom_line()
+g1
+
+#e. ¿Cuántos minutos dura la llamada promedio?
+
+mean(df$duracion)
+
+#f. Realice una tabla de frecuencias con el tiempo de llamada
+
+llamadas <- df %>%
+  filter(Call == 1)%>%
+  select((duracion))
+
+Frecuancia_llamadas <- as.data.frame(table(llamadas))
+names(Frecuancia_llamadas)[1] <- "Dur. llamada (min)"
+names(Frecuancia_llamadas)[2] <- "Cant. de llamadas"
+Frecuancia_llamadas
 
 
 # Parte 3 - Signo Zodiacal
