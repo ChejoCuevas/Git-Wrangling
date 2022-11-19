@@ -2,6 +2,7 @@
 # CARGANDO LAS LIBRERIAS Y LA DATA
 library(dplyr)
 library(gensvm)
+library(Hmisc)
 titanic <- read.csv("titanic.csv")
 titanic_MD <- read.csv("titanic_MD.csv")
 
@@ -20,21 +21,44 @@ titanic_MD <- titanic_MD %>%
                               Parch = factor(Parch),
                               Embarked = factor(Embarked)) %>% 
                               select(-PassengerId, -Name)
+
+########################################### OBSERVANDO DISTRIBUCIONES INICIALES
 summary(titanic_MD)
 
-# Para cada columna especificar qué tipo de modelo se utilizará (solo el
-                                                      #nombre y el porqué) y qué valores se le darán a todos los missing values.
-
-#Esta se encuentra en el reporte
+hist.data.frame(titanic_MD)
 
 
+barplot(height = table(titanic_MD$Survived), col = "blue")
+barplot(height = table(titanic_MD$Pclass), col = "blue")
+barplot(height = table(titanic_MD$Sex), col = "blue")
+barplot(height = table(titanic_MD$SibSp), col = "blue")
+barplot(height = table(titanic_MD$Parch), col = "blue")
+barplot(height = table(titanic_MD$Embarked), col = "blue")
+
+hist(x = titanic_MD$Age)
+hist(x = titanic_MD$Fare)
 
 
 
+######################################### IMPUTANDO DATOS DE LA FORMA COMO SE ESPECIFIO EN EL REPORTE
 
 
+# Sex
 
 
+# Age
+
+
+# SibSp
+
+
+# Parch
+
+
+# Fare
+
+
+# EMbarked
 
 
 
